@@ -1,0 +1,55 @@
+<?php
+// $Id: compass_rose.install,v 1.2 2010/11/24 08:08:51 plopesc Exp $
+
+/**
+ * @file
+ * This file holds the functions for the installing
+ * and enabling of the Compass Rose module.
+ *
+ * @ingroup CCK
+ */
+ 
+/**
+ * Implementation of hook_enable().
+ */
+function compass_rose_enable() {
+  // Let content/cck know about our actions
+  drupal_load('module', 'content');
+  content_notify('enable', 'compass_rose');
+}
+ 
+/**
+ * Implementation of hook_disable().
+ */
+function compass_rose_disable() {
+  // Let content/cck know about our actions
+  drupal_load('module', 'disable');
+  content_notify('disable', 'compass_rose');
+}
+ 
+/**
+ * Implementation of hook_install().
+ */
+function compass_rose_install() {
+  // Let content/cck know about our actions
+  drupal_load('module', 'install');
+  content_notify('install', 'compass_rose');
+  variable_set('compass_rose_plugin_folder', 
+      'http://wilq32.adobeair.pl/jQueryRotate/jQueryRotate.js');
+}
+ 
+/**
+ * Implementation of hook_uninstall().
+ */
+function compass_rose_uninstall() {
+  // Let content/cck know about our actions
+  drupal_load('module', 'uninstall');
+  content_notify('uninstall', 'compass_rose');
+  
+  // Get module variables
+  $results = db_query("SELECT v.name FROM {variable} AS v WHERE v.name LIKE '%s%%'", 'compass_rose_');
+  // Remove variables
+  while ($row = db_fetch_array($results)) {
+    variable_del($row['name']);
+  }
+}

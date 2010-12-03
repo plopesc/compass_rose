@@ -1,0 +1,7 @@
+/* $Id: compass_rose.css,v 1.2 2010/11/24 19:38:13 plopesc Exp $ */ 
+
+@CHARSET "UTF-8";
+
+.compass-rose-select .form-item, .compass-rose-item{
+  float:left;
+}
