@@ -1,0 +1,8 @@
+Code of the Compass Rose Drupal module (http://drupal.org/project/compass_rose)
+
+Compass Rose module provides a type of CCK field called Orientation that allows to represent the most commons orientations (North, North-East, East, South-East, South, South-West, West and North-West).
+
+Also provides a formatter that displays a compass rose that represents the selected Orientation.
+
+
+By Pablo López <plopesc@gmail.com> <http://drupal.org/user/282415/>
