@@ -1,4 +1,4 @@
-// $Id: compass_rose.js,v 1.2 2010/11/30 20:39:21 plopesc Exp $ 
+// $Id$ 
 
 Drupal.behaviors.compass_rose_field = function(context){
 	var compass_rose = compass_rose||{};

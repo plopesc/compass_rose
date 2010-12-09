@@ -1,4 +1,4 @@
-; $Id: compass_rose.info,v 1.1 2010/11/23 17:30:48 plopesc Exp $ 
+; $Id$ 
 name = Compass Rose
 description = Provides a Compass Rose field that can indicate an orientation.
 core = 6.x
