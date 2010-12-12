@@ -132,7 +132,7 @@ function compass_rose_field_instance_settings_form($field, $instance) {
 function compass_rose_field_validate($entity_type, $entity, $field, $instance, $langcode, $items, &$errors) {
   foreach ($items as $delta => $item) {
 
-      if (!empty($item['value']) && $item['value'] > 360) {
+      if (!empty($item['value']) && $item['value']['value'] > 360 || $item['value']['value'] < -1) {
         $message = t('%name: the orientation value must be between 0 and 360', array('%name' => $instance['label']));
         $errors[$field['field_name']][$langcode][$delta][] = array(
           'error' => "orientation_value",
