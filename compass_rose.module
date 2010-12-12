@@ -12,12 +12,12 @@
  */
 
 /**
- * Implementation of hook_help()
+ * Implements hook_help().
  */
 function compass_rose_help($path, $arg) {
   switch ($path) {
     case 'admin/help#compass_rose':
-      $output = '<p>'. t('The Compass Rose module provides widgets and field formatters that allows to represent a concrete orientation through a compass Rose.') .'</p>';
+      $output = '<p>' . t('The Compass Rose module provides widgets and field formatters that allows to represent a concrete orientation through a compass Rose.') . '</p>';
       return $output;
     break;
   }
@@ -25,7 +25,7 @@ function compass_rose_help($path, $arg) {
 }
 
 /**
- * Implementation of hook_menu()
+ * Implements hook_menu().
  */
 function compass_rose_menu() {
 
@@ -36,7 +36,7 @@ function compass_rose_menu() {
     'page arguments' => array('compass_rose_admin'),
     'access arguments' => array('access administration pages'),
     'type' => MENU_NORMAL_ITEM,
-   );
+  );
 
   return $items;
 }
@@ -54,12 +54,12 @@ function compass_rose_theme() {
 }
 
 /**
- *  Implements hook_element_info().
+ * Implements hook_element_info().
  *  
- *  Defines the Compass Rose buttons element.
+ * Defines the Compass Rose buttons element.
  */
 
-function compass_rose_element_info(){
+function compass_rose_element_info() {
   return array(
     'compass_rose_buttons' => array(
       '#input' => TRUE,
@@ -131,27 +131,14 @@ function compass_rose_field_instance_settings_form($field, $instance) {
  */
 function compass_rose_field_validate($entity_type, $entity, $field, $instance, $langcode, $items, &$errors) {
   foreach ($items as $delta => $item) {
-    // @todo Length is counted separately for summary and value, so the maximum
-    //   length can be exceeded very easily.
-/*    foreach (array('value', 'summary') as $column) {
-      if (!empty($item[$column])) {
-        if (!empty($field['settings']['max_length']) && drupal_strlen($item[$column]) > $field['settings']['max_length']) {
-          switch ($column) {
-            case 'value':
-              $message = t('%name: the text may not be longer than %max characters.', array('%name' => $instance['label'], '%max' => $field['settings']['max_length']));
-              break;
 
-            case 'summary':
-              $message = t('%name: the summary may not be longer than %max characters.', array('%name' => $instance['label'], '%max' => $field['settings']['max_length']));
-              break;
-          }
-          $errors[$field['field_name']][$langcode][$delta][] = array(
-            'error' => "text_{$column}_length",
-            'message' => $message,
-          );
-        }
+      if (!empty($item['value']) && $item['value'] > 360) {
+        $message = t('%name: the orientation value must be between 0 and 360', array('%name' => $instance['label']));
+        $errors[$field['field_name']][$langcode][$delta][] = array(
+          'error' => "orientation_value",
+          'message' => $message,
+        );
       }
-    }*/
   }
 }
 
@@ -186,17 +173,18 @@ function compass_rose_field_formatter_view($entity_type, $entity, $field, $insta
   switch ($display['type']) {
     case 'compass_rose_default':
       foreach ($items as $delta => $item) {
-			  if (isset($item['value']) && $item['value'] >= 0) {
-			    $array = array(
-			      'compass_rose' => array(
-			        'compass-rose-'. $entity->nid ."-". $field['field_name'] ."-". $delta => $item['value'])
-			    );
-			    drupal_add_js($array, 'setting');
-			    compass_rose_include();
-			    $element[$delta] = array('#markup' => '<div class="compass-rose-'. $entity->nid ."-". $field['field_name'] .'-wrapper">'. 
-			    theme_image(array('path' => $instance['settings']['image'], 'alt' => compass_rose_default_options($item['value']), 'title' => compass_rose_default_options($item['value']), 'attributes' =>array('id' => 'compass-rose-'. $entity->nid ."-". $field['field_name'] ."-". $delta, 'class' => 'compass-rose-item'))) .
-			    '</div>');
-			  }
+        if (isset($item['value']) && $item['value'] >= 0) { 
+          $array = array(
+            'compass_rose' => array(
+              'compass-rose-' . $entity->nid . '-' . $field['field_name'] . '-' . $delta => $item['value'],
+            ),
+          );
+          drupal_add_js($array, 'setting');
+          compass_rose_include();
+          $element[$delta] = array('#markup' => '<div class="compass-rose-' . $entity->nid . '-' . $field['field_name'] . '-wrapper">' . 
+          theme_image(array('path' => $instance['settings']['image'], 'alt' => compass_rose_default_options($item['value']), 'title' => compass_rose_default_options($item['value']), 'attributes' => array('id' => 'compass-rose-' . $entity->nid . '-' . $field['field_name'] . '-' . $delta, 'class' => 'compass-rose-item'))) .
+            '</div>');
+        }
       }
       break;
   }
@@ -238,11 +226,11 @@ function compass_rose_field_widget_form(&$form, &$form_state, $field, $instance,
       break;
       
     case 'orientation_buttons':
-    	$main_widget = $element + array(
+      $main_widget = $element + array(
         '#type' => 'compass_rose_buttons',
         '#default_value' => isset($items[$delta]['value']) ? $items[$delta]['value'] : $instance['default_value'][0]['value'],
-    	);
-    	break;
+      );
+      break;
 
   }
   $element['value'] = $main_widget;
@@ -274,7 +262,7 @@ function compass_rose_field_widget_error($element, $error, $form, &$form_state) 
  * Process an individual element.
  */
 function compass_rose_buttons_process($element, $form_state, $complete_form) {
-  $field = field_info_instance($element['#entity_type'],$element['#field_name'],$element['#bundle']);
+  $field = field_info_instance($element['#entity_type'], $element['#field_name'], $element['#bundle']);
   $field_key = $element['#columns'][0];
   $delta = $element['#delta'];
   
@@ -283,22 +271,22 @@ function compass_rose_buttons_process($element, $form_state, $complete_form) {
   else
     $value = empty($element['#value']) ? 0:$element['#value'];
     
-  $image = isset($field['settings']['image'])?$field['settings']['image']:drupal_get_path('module', 'compass_rose') .'/img/compass_rose0.png';
+  $image = isset($field['settings']['image']) ? $field['settings']['image'] : drupal_get_path('module', 'compass_rose') . '/img/compass_rose0.png';
   
   $element['decrease_button'] = array(
     '#type' => 'item',
-    '#markup' => '<button type="button" class="compass-rose-control-button" id="compass-rose-'. $field['field_name'] .'-'. $delta .'-decrease-button" rel="compass-rose-'. $field['field_name'] .'-'. $delta .'">'. t('<-') .'</button>',
+    '#markup' => '<button type="button" class="compass-rose-control-button" id="compass-rose-' . $field['field_name'] . '-' . $delta . '-decrease-button" rel="compass-rose-' . $field['field_name'] . '-' . $delta . '">' . t('<-') . '</button>',
     '#prefix' => '<div class="container-inline"style="margin-bottom:15px;">',
   );
   $element['increase_button'] = array(
     '#type' => 'item',
-    '#markup' => '<button type="button" class="compass-rose-control-button" id="compass-rose-'. $field['field_name'] .'-'. $delta .'-increase-button" rel="compass-rose-'. $field['field_name'] .'-'. $delta .'">'. t('->') .'</button>',
+    '#markup' => '<button type="button" class="compass-rose-control-button" id="compass-rose-' . $field['field_name'] . '-' . $delta . '-increase-button" rel="compass-rose-' . $field['field_name'] . '-' . $delta . '">' . t('->') . '</button>',
     '#suffix' => '</div>',
   );
   
   $element['image'] = array(
     '#type' => 'item',
-    '#markup' => theme_image(array('path' => $image, 'alt' => $image,  'title' => $image, 'attributes' => array('id' => 'compass-rose-'. $field['field_name'] .'-'. $delta))),
+    '#markup' => theme_image(array('path' => $image, 'alt' => $image,  'title' => $image, 'attributes' => array('id' => 'compass-rose-' . $field['field_name'] . '-' . $delta))),
   );
   
   $element[$field_key] = array(
@@ -321,9 +309,9 @@ function compass_rose_buttons_process($element, $form_state, $complete_form) {
   
   drupal_add_js(array(
     'compass_rose_defaults' => array(
-      'compass-rose-'. $field['field_name'] .'-'. $delta => array(      
+      'compass-rose-' . $field['field_name'] . '-' . $delta => array(      
         'value' => $value,
-        'input' => $field['field_name'] .'[' .$element['#language']. '][' . $delta .'][value',
+        'input' => $field['field_name'] . '[' . $element['#language'] . '][' . $delta . '][value',
         )
       )
     ), 'setting');
@@ -351,7 +339,7 @@ function compass_rose_default_options($option = NULL) {
     if (is_array($option)) {
       $option = $option['value'];
     }
-    if(array_key_exists($option,$options)) {
+    if (array_key_exists($option, $options)) {
       return $options[intval($option)];
     }
     else {
@@ -359,7 +347,7 @@ function compass_rose_default_options($option = NULL) {
     }
   }
   else {
-  	return $options;
+    return $options;
   }
 }
 
@@ -396,7 +384,7 @@ function compass_rose_include() {
     else {
       drupal_add_js($path);
     }
-    drupal_add_js(drupal_get_path('module', 'compass_rose') .'/js/compass_rose.js');
+    drupal_add_js(drupal_get_path('module', 'compass_rose') . '/js/compass_rose.js');
     drupal_add_css(drupal_get_path('module', 'compass_rose') . '/css/compass_rose.css');
   }
 }
@@ -406,9 +394,9 @@ function theme_compass_rose_buttons($element) {
 }
 
 /**
- * Function that defines the hook_menu() config page
+ * Function that defines the Compass Rose module config page
  */
-function compass_rose_admin(){
+function compass_rose_admin() {
   $jqueryrotate_source_description = t('The source for the jQueryRotate plugin can be one of two things:')
     . '<ul><li>'
     . t('URL: This means that the jQueryRotate plugin is not hosted on this site. jQueryRotate provides a hosted JS file. By default the Compass Rose module will use this.  This is @ol_api_url. This may effect performance as it is not hosted on your site.', array('@ol_api_url' => 'http://wilq32.adobeair.pl/jQueryRotate/jQueryRotate.js'))
@@ -427,7 +415,7 @@ function compass_rose_admin(){
     '#default_value' => variable_get('compass_rose_plugin_folder', "http://wilq32.adobeair.pl/jQueryRotate/jQueryRotate.js"),
     '#size' => 50,
     '#maxlength' => 255,
-    '#required' => true,
+    '#required' => TRUE,
     '#description' => $jqueryrotate_source_description,
   );
   

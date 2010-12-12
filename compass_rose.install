@@ -28,7 +28,7 @@ function compass_rose_field_schema($field) {
     ),
   );
   $indexes = array(
-   	'value' => array('value'),
+    'value' => array('value'),
   );
 
   return array(
@@ -43,13 +43,13 @@ function compass_rose_field_schema($field) {
  * 
  *  Defines the variable compass_rose_plugin_folder
  */
-function compass_rose_install(){
+function compass_rose_install() {
   variable_set('compass_rose_plugin_folder', 
       "http://wilq32.adobeair.pl/jQueryRotate/jQueryRotate.js");
 }
 
 /**
- * Implementation of hook_uninstall().
+ * Implements hook_uninstall().
  * 
  * Removes the module variables
  */
