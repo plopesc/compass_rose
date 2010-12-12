@@ -2,5 +2,8 @@
 name = Compass Rose
 description = Provides a Compass Rose field that can indicate an orientation.
 core = 7.x
-package = CCK
-dependencies[] = content
+package = Orientation
+dependencies[] = field
+files[] = compass_rose.module
+files[] = compass_rose.install
+configure = admin/config/compass_rose

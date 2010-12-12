@@ -1,51 +1,60 @@
-<?php
-// $Id: compass_rose.install,v 1.2 2010/11/24 08:08:51 plopesc Exp $
+<?php 
+
+// $Id$
 
 /**
  * @file
- * This file holds the functions for the installing
- * and enabling of the Compass Rose module.
+ * Install/Update/Uninstall functions for Compass Rose module
+ */
+
+/**
+ * Implements hook_field_schema().
  *
- * @ingroup CCK
+ * This defines the actual database schema of the field, using the format
+ * used by the Schema API.
+ *
+ * The actual data we store here is just one 3 digits length integer.
+ *
+ * @see hook_field_schema()
+ * @link schemaapi Schema API @endlink
  */
+function compass_rose_field_schema($field) {
 
-/**
- * Implementation of hook_enable().
- */
-function compass_rose_enable() {
-  // Let content/cck know about our actions
-  drupal_load('module', 'content');
-  content_notify('enable', 'compass_rose');
+  $columns = array(
+    'value' => array(
+      'type' => 'int',
+      'length' => 3,
+      'not null' => FALSE,
+    ),
+  );
+  $indexes = array(
+   	'value' => array('value'),
+  );
+
+  return array(
+    'columns' => $columns,
+    'indexes' => $indexes,
+  );
+  
 }
 
 /**
- * Implementation of hook_disable().
+ * Implements hook_install().
+ * 
+ *  Defines the variable compass_rose_plugin_folder
  */
-function compass_rose_disable() {
-  // Let content/cck know about our actions
-  drupal_load('module', 'disable');
-  content_notify('disable', 'compass_rose');
-}
-
-/**
- * Implementation of hook_install().
- */
-function compass_rose_install() {
-  // Let content/cck know about our actions
-  drupal_load('module', 'install');
-  content_notify('install', 'compass_rose');
+function compass_rose_install(){
   variable_set('compass_rose_plugin_folder', 
-      'http://wilq32.adobeair.pl/jQueryRotate/jQueryRotate.js');
+      "http://wilq32.adobeair.pl/jQueryRotate/jQueryRotate.js");
 }
 
 /**
  * Implementation of hook_uninstall().
+ * 
+ * Removes the module variables
  */
 function compass_rose_uninstall() {
-  // Let content/cck know about our actions
-  drupal_load('module', 'uninstall');
-  content_notify('uninstall', 'compass_rose');
-  
+    
   // Get module variables
   $results = db_query("SELECT v.name FROM {variable} AS v WHERE v.name LIKE '%s%%'", 'compass_rose_');
   // Remove variables
